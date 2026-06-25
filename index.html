@@ -19,13 +19,13 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
 
-    <div id="mainContainer" class="w-full max-w-4xl glass-card p-5 md:p-8 rounded-3xl shadow-2xl hidden">
+    <div id="mainContainer" class="w-full max-w-4xl glass-card p-5 md:p-8 rounded-3xl shadow-2xl">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-2">
                 <div class="h-3 w-3 rounded-full bg-indigo-500 animate-pulse"></div>
                 <span class="text-xs font-bold tracking-widest text-indigo-400 uppercase">StreamHub Premium</span>
             </div>
-            <span class="text-xs bg-slate-700/50 border border-slate-600/50 px-3 py-1 rounded-full text-slate-300 font-medium">Secured Stream</span>
+            <span class="text-xs bg-slate-700/50 border border-slate-600/50 px-3 py-1 rounded-full text-slate-300 font-medium">Direct Stream</span>
         </div>
 
         <h1 id="videoTitle" class="text-2xl md:text-3xl font-bold mb-6 text-white tracking-tight">Loading Media...</h1>
@@ -38,8 +38,8 @@
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800">
             <div>
-                <p class="text-sm font-semibold text-slate-200">High-Speed Encrypted Mirror</p>
-                <p class="text-xs text-slate-400 mt-0.5">Your download is ready with a custom filename</p>
+                <p class="text-sm font-semibold text-slate-200">High-Speed Mirror</p>
+                <p class="text-xs text-slate-400 mt-0.5">Click below to download the file directly</p>
             </div>
             <button id="downloadBtn" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold px-8 py-3.5 rounded-xl transition-all active:scale-95 shadow-lg cursor-pointer text-sm">
                 Download Now
@@ -47,81 +47,44 @@
         </div>
     </div>
 
-    <div id="errorContainer" class="hidden text-center p-8 bg-slate-900 border border-slate-800 rounded-2xl max-w-md">
-        <p class="text-red-400 font-semibold text-lg">⚠️ Data Loading Error!</p>
-        <p class="text-xs text-slate-400 mt-2">লিংক থেকে ডেটা পড়া যায়নি। অনুগ্রহ করে জেনারেটর পেজ থেকে নতুন লিংক তৈরি করুন।</p>
-    </div>
-
     <script>
-        let decryptedUrl = "";
-        let decryptedName = "";
+        let rawUrl = "";
+        let rawName = "";
 
-        // Plyr Player Initialization
+        // Player Init
         const player = new Plyr('#player', { 
             controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'] 
         });
 
         function initApp() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const encodedData = params.get('data');
+            const params = new URLSearchParams(window.location.search);
+            rawUrl = params.get('url');
+            rawName = params.get('name');
 
-                if (!encodedData) {
-                    document.getElementById('errorContainer').classList.remove('hidden');
-                    return;
-                }
-
-                // Native Base64 Decoding (No External Library Needed)
-                const decodedString = atob(decodeURIComponent(encodedData));
-                const data = JSON.parse(decodedString);
-
-                decryptedUrl = data.url;
-                decryptedName = data.name;
-
-                if (!decryptedUrl || !decryptedName) throw new Error("Invalid Data");
-
-                // UI Update
-                document.getElementById('videoTitle').innerText = decryptedName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-                document.getElementById('mainContainer').classList.remove('hidden');
-
-                // Load Media into Plyr
-                player.source = {
-                    type: 'video',
-                    sources: [{ src: decryptedUrl, type: 'video/mp4' }]
-                };
-
-            } catch (e) {
-                console.error("Decryption Error: ", e);
-                document.getElementById('errorContainer').classList.remove('hidden');
+            if (!rawUrl || !rawName) {
+                document.getElementById('videoTitle').innerText = "Error: Link or Name missing in URL!";
+                return;
             }
+
+            // Title Update
+            document.getElementById('videoTitle').innerText = decodeURIComponent(rawName).replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+
+            // Source Load
+            player.source = {
+                type: 'video',
+                sources: [{ src: decodeURIComponent(rawUrl), type: 'video/mp4' }]
+            };
         }
 
-        // Download Button Handler
-        document.getElementById('downloadBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('downloadBtn');
-            const originalText = btn.innerHTML;
-            try {
-                btn.innerText = "Processing...";
-                btn.disabled = true;
-
-                const response = await fetch(decryptedUrl);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = decryptedName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(blobUrl);
-            } catch (error) {
-                // Fallback direct download
-                window.open(decryptedUrl, '_blank');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+        // Simple Download Trigger
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const a = document.createElement('a');
+            a.href = decodeURIComponent(rawUrl);
+            a.download = decodeURIComponent(rawName);
+            a.target = '_blank'; // কোনো কোনো ব্রাউজারে ব্লকিং এড়াতে নতুন ট্যাবে ওপেন হবে
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         });
 
         window.onload = initApp;
