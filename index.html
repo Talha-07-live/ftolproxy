@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -49,52 +48,55 @@
     </div>
 
     <div id="errorContainer" class="hidden text-center p-8 bg-slate-900 border border-slate-800 rounded-2xl max-w-md">
-        <p class="text-red-400 font-semibold text-lg">⚠️ Decryption Error / Invalid Link!</p>
-        <p class="text-xs text-slate-400 mt-2">লিংকটি ডিক্রিপ্ট করা যায়নি। দয়া করে নতুন জেনারেটর স্ক্রিপ্ট দিয়ে লিংক তৈরি করুন।</p>
+        <p class="text-red-400 font-semibold text-lg">⚠️ Data Loading Error!</p>
+        <p class="text-xs text-slate-400 mt-2">লিংক থেকে ডেটা পড়া যায়নি। অনুগ্রহ করে জেনারেটর পেজ থেকে নতুন লিংক তৈরি করুন।</p>
     </div>
 
     <script>
-        const SECRET_KEY = "My_Super_Secret_App_Key_2026"; 
-        const player = new Plyr('#player', { controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'] });
-        
         let decryptedUrl = "";
         let decryptedName = "";
 
+        // Plyr Player Initialization
+        const player = new Plyr('#player', { 
+            controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'] 
+        });
+
         function initApp() {
-            const params = new URLSearchParams(window.location.search);
-            // এখানে decodeURIComponent ব্যবহার করা হয়েছে যাতে ইউআরএল স্পেশাল ক্যারেক্টার ঠিক থাকে
-            const encryptedData = params.get('data');
-
-            if (!encryptedData) {
-                document.getElementById('errorContainer').classList.remove('hidden');
-                return;
-            }
-
             try {
-                // Decrypting using safe string conversion
-                const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
-                const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-                
-                if(!decryptedText) throw new Error("Empty decryption outcome");
-                
-                const data = JSON.parse(decryptedText);
+                const params = new URLSearchParams(window.location.search);
+                const encodedData = params.get('data');
+
+                if (!encodedData) {
+                    document.getElementById('errorContainer').classList.remove('hidden');
+                    return;
+                }
+
+                // Native Base64 Decoding (No External Library Needed)
+                const decodedString = atob(decodeURIComponent(encodedData));
+                const data = JSON.parse(decodedString);
 
                 decryptedUrl = data.url;
                 decryptedName = data.name;
 
+                if (!decryptedUrl || !decryptedName) throw new Error("Invalid Data");
+
+                // UI Update
                 document.getElementById('videoTitle').innerText = decryptedName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
                 document.getElementById('mainContainer').classList.remove('hidden');
 
+                // Load Media into Plyr
                 player.source = {
                     type: 'video',
                     sources: [{ src: decryptedUrl, type: 'video/mp4' }]
                 };
+
             } catch (e) {
-                console.error(e);
+                console.error("Decryption Error: ", e);
                 document.getElementById('errorContainer').classList.remove('hidden');
             }
         }
 
+        // Download Button Handler
         document.getElementById('downloadBtn').addEventListener('click', async () => {
             const btn = document.getElementById('downloadBtn');
             const originalText = btn.innerHTML;
@@ -114,6 +116,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(blobUrl);
             } catch (error) {
+                // Fallback direct download
                 window.open(decryptedUrl, '_blank');
             } finally {
                 btn.innerHTML = originalText;
