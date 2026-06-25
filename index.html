@@ -14,15 +14,8 @@
             background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
             color: #f8fafc;
         }
-        .plyr--video {
-            --plyr-color-main: #6366f1;
-            border-radius: 16px;
-        }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
+        .plyr--video { --plyr-color-main: #6366f1; border-radius: 16px; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
@@ -55,15 +48,13 @@
         </div>
     </div>
 
-    <div id="errorContainer" class="hidden text-center p-8 bg-slate-900 border border-slate-800 rounded-2xl">
-        <p class="text-red-400 font-semibold text-lg">⚠️ Invalid or Expired Token!</p>
-        <p class="text-xs text-slate-500 mt-1">Please generate a valid link from the admin panel.</p>
+    <div id="errorContainer" class="hidden text-center p-8 bg-slate-900 border border-slate-800 rounded-2xl max-w-md">
+        <p class="text-red-400 font-semibold text-lg">⚠️ Decryption Error / Invalid Link!</p>
+        <p class="text-xs text-slate-400 mt-2">লিংকটি ডিক্রিপ্ট করা যায়নি। দয়া করে নতুন জেনারেটর স্ক্রিপ্ট দিয়ে লিংক তৈরি করুন।</p>
     </div>
 
     <script>
-        // Secret Key (Generator এবং Player দুটি ফাইলে এই Key-টি একদম সেম হতে হবে)
         const SECRET_KEY = "My_Super_Secret_App_Key_2026"; 
-
         const player = new Plyr('#player', { controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'] });
         
         let decryptedUrl = "";
@@ -71,6 +62,7 @@
 
         function initApp() {
             const params = new URLSearchParams(window.location.search);
+            // এখানে decodeURIComponent ব্যবহার করা হয়েছে যাতে ইউআরএল স্পেশাল ক্যারেক্টার ঠিক থাকে
             const encryptedData = params.get('data');
 
             if (!encryptedData) {
@@ -79,24 +71,26 @@
             }
 
             try {
-                // Decrypting the data
+                // Decrypting using safe string conversion
                 const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
                 const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+                
+                if(!decryptedText) throw new Error("Empty decryption outcome");
+                
                 const data = JSON.parse(decryptedText);
 
                 decryptedUrl = data.url;
                 decryptedName = data.name;
 
-                // UI Update
                 document.getElementById('videoTitle').innerText = decryptedName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
                 document.getElementById('mainContainer').classList.remove('hidden');
 
-                // Load Video
                 player.source = {
                     type: 'video',
                     sources: [{ src: decryptedUrl, type: 'video/mp4' }]
                 };
             } catch (e) {
+                console.error(e);
                 document.getElementById('errorContainer').classList.remove('hidden');
             }
         }
@@ -120,7 +114,6 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(blobUrl);
             } catch (error) {
-                // Fallback direct link
                 window.open(decryptedUrl, '_blank');
             } finally {
                 btn.innerHTML = originalText;
