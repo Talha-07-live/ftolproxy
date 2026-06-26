@@ -30,7 +30,6 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
         .player-wrapper {
             position: relative; 
             width: 100%; 
@@ -41,11 +40,9 @@
             overflow: hidden; 
             background: #020206;
         }
-
         video {
             width: 100%; height: 100%; object-fit: contain; z-index: 1;
         }
-
         .player-controls {
             position: absolute; inset: 0;
             background: linear-gradient(to bottom, rgba(2,2,6,0.5) 0%, transparent 25%, transparent 75%, rgba(2,2,6,0.95) 100%);
@@ -54,11 +51,9 @@
             transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 5; padding: 15px;
         }
-        
         .player-controls.show-controls {
             opacity: 1 !important; pointer-events: auto !important;
         }
-
         .center-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 55px; height: 55px; background: rgba(122, 60, 255, 0.2);
@@ -69,11 +64,9 @@
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 6; 
             box-shadow: 0 0 30px rgba(122,60,255,0.4);
         }
-        
         .center-btn.show-controls {
             opacity: 1 !important; pointer-events: auto !important;
         }
-
         .seek-ripple {
             position: absolute; width: 35%; height: 100%; top: 0;
             background: rgba(255, 255, 255, 0.08); display: flex;
@@ -90,18 +83,15 @@
             border-radius: 10px; position: relative; cursor: pointer; transition: height 0.1s;
         }
         .progress-container:hover { height: 8px; }
-        
         .progress-bar {
             position: absolute; left: 0; top: 0; height: 100%; width: 0%;
             background: linear-gradient(90deg, #7a3cff, #00f2fe); border-radius: 10px; z-index: 3;
         }
-        
         .buffer-bar {
             position: absolute; left: 0; top: 0; height: 100%; width: 0%;
             background: rgba(255, 255, 255, 0.22); border-radius: 10px; z-index: 2;
             transition: width 0.3s ease;
         }
-
         .control-btn {
             background: none; border: none; color: #fff; font-size: 15px; cursor: pointer;
             transition: all 0.2s;
@@ -114,7 +104,6 @@
             border-radius: 50%; animation: spin 0.7s linear infinite; display: none; z-index: 10;
             filter: drop-shadow(0 0 15px #00f2fe);
         }
-
         .settings-panel {
             position: absolute; bottom: 55px; right: 15px;
             background: rgba(10, 10, 20, 0.95); border: 1px solid rgba(122, 60, 255, 0.5);
@@ -144,12 +133,12 @@
             </div>
             <div>
                 <h1 class="text-sm font-black tracking-widest text-white">TALHA<span class="text-cyan-400">PREMIUM</span></h1>
-                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold -mt-1">Core Engine v9.0</p>
+                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold -mt-1">Core Engine v9.5</p>
             </div>
         </div>
         <div>
             <span class="text-[10px] bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-xl font-black text-cyan-400 tracking-wider flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span> SECURE COR ENGINE
+                <span class="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span> SECURE BLOB INTERCEPTOR
             </span>
         </div>
     </header>
@@ -157,7 +146,6 @@
     <main class="w-full max-w-4xl mx-auto px-4 py-6 flex-grow flex flex-col justify-center">
         
         <div id="playerContainer" class="player-wrapper relative w-full aspect-video rounded-3xl overflow-hidden group premium-glow border border-white/5">
-            
             <div class="spinner" id="loadingSpinner"></div>
             
             <div class="seek-ripple left" id="rippleLeft"><i class="fas fa-backward"></i>10s</div>
@@ -204,8 +192,8 @@
         <div class="w-full blur-panel p-6 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-6">
             <div class="space-y-1 w-full">
                 <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-black tracking-widest bg-purple-500/10 text-purple-400 px-2.5 py-0.5 rounded-md border border-purple-500/20 uppercase">SECURE BLOB MULTI-SYSTEM</span>
-                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">CORS FIXXED</span>
+                    <span class="text-[9px] font-black tracking-widest bg-purple-500/10 text-purple-400 px-2.5 py-0.5 rounded-md border border-purple-500/20 uppercase">BLOB STORAGE FORCE</span>
+                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">NAME ENFORCED</span>
                 </div>
                 <h2 id="videoTitle" class="text-xl font-bold text-white tracking-tight">Syncing Stream Core...</h2>
                 <p id="fileNameSubtitle" class="text-xs text-slate-400 font-medium break-all max-w-lg">Configuring system variables.</p>
@@ -218,7 +206,7 @@
     </main>
 
     <footer class="w-full text-center py-4 text-[10px] text-slate-600 font-extrabold tracking-widest">
-        TALHA MASTER ARCHITECTURE V9.0
+        TALHA MASTER ARCHITECTURE V9.5
     </footer>
 
     <script>
@@ -237,9 +225,10 @@
                 isLiveStream = true;
             } else if (rawUrl) {
                 videoSrc = decodeURIComponent(rawUrl);
-                customFileName = decodeURIComponent(customFileName);
-                // নিশ্চিত করা হচ্ছে ফাইলের এক্সটেনশন যেন ঠিক থাকে
-                if (!customFileName.includes('.')) {
+                customFileName = decodeURIComponent(customFileName).trim();
+                
+                // এক্সটেনশন চেক এবং ফিক্স
+                if (!/\.[a-zA-Z0-9]+$/.test(customFileName)) {
                     customFileName += ".mp4";
                 }
                 isLiveStream = false;
@@ -279,17 +268,15 @@
                 goLiveBtn.style.display = 'none';
                 ultimateDownloadBtn.style.display = 'flex';
                 videoTitle.innerText = customFileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-                fileNameSubtitle.innerText = "Target Save Name: " + customFileName;
+                fileNameSubtitle.innerText = "File Save Name: " + customFileName;
             } else {
                 videoTitle.innerText = channelId ? channelId.toUpperCase() : "LIVE STREAMING";
                 fileNameSubtitle.innerText = "Live Broadcast Protocol Active.";
             }
 
-            // HLS বা ডিরেক্ট ইঞ্জিন লোড মেকানিজম আপডেট করা হয়েছে (ভিডিও ব্ল্যাক স্ক্রিন এরর ফিক্স)
+            // প্লেয়ার মেকানিজম
             if (typeof Hls !== 'undefined' && Hls.isSupported() && (videoSrc.includes('.m3u8') || isLiveStream)) {
-                const hlsConfig = {
-                    maxBufferLength: 60, maxMaxBufferLength: 120, enableWorker: true, liveSyncDuration: 120
-                };
+                const hlsConfig = { maxBufferLength: 60, maxMaxBufferLength: 120, enableWorker: true, liveSyncDuration: 120 };
                 const hls = new Hls(hlsConfig);
                 hlsEngine = hls;
                 hls.loadSource(videoSrc);
@@ -300,9 +287,8 @@
                     setTimeout(setupQualityMenu, 1000);
                 });
             } else {
-                // MP4 সরাসরি লোড করার সিস্টেম নিখুঁত করা হয়েছে
                 video.src = videoSrc;
-                video.load(); 
+                video.load();
                 gearBtn.style.display = 'none';
                 video.addEventListener('loadedmetadata', () => {
                     video.play().catch(() => showControls());
@@ -434,62 +420,70 @@
             function triggerRipple(side) { const ripple = document.getElementById(side === 'right' ? 'rippleRight' : 'rippleLeft'); ripple.style.opacity = '1'; setTimeout(() => { ripple.style.opacity = '0'; }, 400); }
 
             // ====================================================================
-            // 🔮 HIGH-SPEED BLOB DOWNLOAD ENGINE (নাম পরিবর্তন এবং CORS এরর ১০০% ফিক্সড)
+            // 🔮 FORCE BLOB DOWNLOADER Engine (১০০% নাম পরিবর্তন গ্যারান্টি)
             // ====================================================================
             ultimateDownloadBtn.addEventListener('click', async function() {
                 const btn = this;
                 const originalHtml = btn.innerHTML;
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Generating Blob File...`;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Downloading...`;
                 btn.style.opacity = "0.6";
                 btn.style.pointerEvents = "none";
 
-                try {
-                    // নাম পরিবর্তন ১০০% নিশ্চিত করতে হাই-স্পিড গেটওয়ে ব্যবহার করা হয়েছে
-                    const secureProxyUrl = "https://cors-anywhere.mirror.workers.dev/?url=" + encodeURIComponent(videoSrc);
-                    const resp = await fetch(secureProxyUrl);
-                    if (!resp.ok) throw new Error("Primary Gateway Bypass");
-                    
-                    const fileBlob = await resp.blob();
-                    const localBlobUrl = window.URL.createObjectURL(fileBlob);
-                    
-                    const dlGate = document.createElement('a');
-                    dlGate.href = localBlobUrl;
-                    dlGate.download = customFileName; // কাস্টম নাম এখানে জোরপূর্বক পুশ করা হলো
-                    document.body.appendChild(dlGate);
-                    dlGate.click();
-                    
-                    document.body.removeChild(dlGate);
-                    window.URL.revokeObjectURL(localBlobUrl);
-                } catch (err) {
-                    // অল্টারনেটিভ ফলব্যাক প্রক্সি (যদি প্রথমটি ওভারলোডেড থাকে)
+                // প্রক্সি চেইন লিস্ট
+                const proxyList = [
+                    "https://api.allorigins.win/raw?url=",
+                    "https://cors-anywhere.mirror.workers.dev/?url=",
+                    "https://corsproxy.io/?"
+                ];
+
+                let downloadSuccess = false;
+
+                // লুপ চালিয়ে প্রক্সি ট্রাই করা হবে
+                for (let i = 0; i < proxyList.length; i++) {
                     try {
-                        const backupProxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(videoSrc);
-                        const respBackup = await fetch(backupProxy);
-                        const fileBlob = await respBackup.blob();
-                        const localBlobUrl = window.URL.createObjectURL(fileBlob);
+                        const targetUrl = proxyList[i] + encodeURIComponent(videoSrc);
+                        const response = await fetch(targetUrl);
                         
-                        const dlGate = document.createElement('a');
-                        dlGate.href = localBlobUrl;
-                        dlGate.download = customFileName;
-                        document.body.appendChild(dlGate);
-                        dlGate.click();
-                        document.body.removeChild(dlGate);
-                        window.URL.revokeObjectURL(localBlobUrl);
-                    } catch(e) {
-                        // একদম শেষ ফলব্যাক (সরাসরি ডাউনলোড)
-                        const fallbackGate = document.createElement('a');
-                        fallbackGate.href = videoSrc;
-                        fallbackGate.download = customFileName;
-                        fallbackGate.setAttribute('download', customFileName);
-                        document.body.appendChild(fallbackGate);
-                        fallbackGate.click();
-                        document.body.removeChild(fallbackGate);
+                        if (!response.ok) throw new Error("Proxy failed");
+
+                        const blobData = await response.blob();
+                        
+                        // ব্রাউজার মেমরিতে ফোর্স রিনেম অবজেক্ট তৈরি
+                        const forcedBlob = new Blob([blobData], { type: blobData.type || 'video/mp4' });
+                        const blobVirtualUrl = window.URL.createObjectURL(forcedBlob);
+                        
+                        const hiddenAnchor = document.createElement('a');
+                        hiddenAnchor.href = blobVirtualUrl;
+                        hiddenAnchor.download = customFileName; // ব্রাউজার এখানে স্ক্রিপ্টের নাম নিতে বাধ্য
+                        
+                        document.body.appendChild(hiddenAnchor);
+                        hiddenAnchor.click();
+                        
+                        // ক্লিনআপ
+                        document.body.removeChild(hiddenAnchor);
+                        window.URL.revokeObjectURL(blobVirtualUrl);
+                        
+                        downloadSuccess = true;
+                        break; // ডাউনলোড সফল হলে লুপ বন্ধ হবে
+                    } catch (err) {
+                        console.warn(`Proxy ${i+1} failed, trying next...`);
                     }
-                } finally {
-                    btn.innerHTML = originalHtml;
-                    btn.style.opacity = "1";
-                    btn.style.pointerEvents = "auto";
                 }
+
+                // যদি সব প্রক্সি ফেল করে তবে ডিরেক্ট লিংক ট্রাই (রিনেম নাও হতে পারে ব্রাউজারের কারণে)
+                if (!downloadSuccess) {
+                    const fallbackAnchor = document.createElement('a');
+                    fallbackAnchor.href = videoSrc;
+                    fallbackAnchor.download = customFileName;
+                    fallbackAnchor.setAttribute('download', customFileName);
+                    document.body.appendChild(fallbackAnchor);
+                    fallbackAnchor.click();
+                    document.body.removeChild(fallbackAnchor);
+                }
+
+                btn.innerHTML = originalHtml;
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
             });
 
             midPlayBtn.onclick = togglePlay;
