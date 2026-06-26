@@ -58,12 +58,12 @@
             </div>
             <div>
                 <h1 class="text-sm font-black tracking-widest text-white">CINEPLEX<span class="text-rose-500">ULTRA</span></h1>
-                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold -mt-1">Stable Core Engine v7.0</p>
+                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold -mt-1">Stable Core Engine v8.0</p>
             </div>
         </div>
         <div>
             <span class="text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl font-black text-emerald-400 tracking-wider flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> SERVICE WORKER TRICK ACTIVE
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> BLOB ENGINE ACTIVE
             </span>
         </div>
     </header>
@@ -127,8 +127,8 @@
         <div class="w-full blur-panel p-6 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-6">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">SW HYBRID INTERCEPTOR</span>
-                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">FORCE CUSTOM NAME</span>
+                    <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">VERCEL COMPATIBLE</span>
+                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">FORCE NAME SAVE</span>
                 </div>
                 <h2 id="videoTitle" class="text-xl font-bold text-white tracking-tight">Syncing Stream Core...</h2>
                 <p id="fileNameSubtitle" class="text-xs text-slate-400 font-medium break-all max-w-lg">Filename profile active.</p>
@@ -144,57 +144,10 @@
     </main>
 
     <footer class="w-full text-center py-4 text-[10px] text-slate-600 font-extrabold tracking-widest">
-        CINEPLEX MASTER ARCHITECTURE V7.0
+        CINEPLEX MASTER ARCHITECTURE V8.0
     </footer>
 
     <script>
-        // ====================================================================
-        // 🔥 LAYER 1: VIRTUAL SERVICE WORKER INJECTION (সার্ভিস ওয়ার্কার ট্রিক কোড)
-        // ====================================================================
-        const workerCode = `
-            self.addEventListener('install', e => self.skipWaiting());
-            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-
-            self.addEventListener('fetch', event => {
-                const url = new URL(event.request.url);
-                // যদি রিকোয়েস্টটি আমাদের ফেক ডাউনলোড গেটওয়েতে আসে
-                if (url.pathname.startsWith('/__sw-force-download__/')) {
-                    const targetUrl = event.request.headers.get('X-Target-Url');
-                    const targetName = event.request.headers.get('X-Target-Name');
-
-                    if (targetUrl) {
-                        event.respondWith(
-                            fetch(targetUrl).then(response => {
-                                // নতুন হেডার অবজেক্ট তৈরি করে ব্রাউজারকে বোকা বানানো হচ্ছে
-                                const newHeaders = new Headers(response.headers);
-                                // ব্রাউজারকে বলা হচ্ছে এটা একটা অ্যাটাচমেন্ট ফাইল এবং এর নাম হবে আপনার কাস্টম নাম
-                                newHeaders.set('Content-Disposition', 'attachment; filename="' + encodeURIComponent(targetName) + '"');
-                                newHeaders.set('Access-Control-Expose-Headers', 'Content-Disposition');
-
-                                return new Response(response.body, {
-                                    status: response.status,
-                                    statusText: response.statusText,
-                                    headers: newHeaders
-                                });
-                            })
-                        );
-                    }
-                }
-            });
-        `;
-
-        // সার্ভিস ওয়ার্কার রেজিস্টার করার ইঞ্জিন
-        if ('serviceWorker' in navigator) {
-            const blob = new Blob([workerCode], { type: 'application/javascript' });
-            const workerUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(workerUrl, { scope: '/' })
-                .then(() => console.log('SW Stream Interceptor Lock: Active'))
-                .catch(err => console.error('SW Precision Failure:', err));
-        }
-
-        // ====================================================================
-        // PLAYER AND UI CORE LOGIC
-        // ====================================================================
         const video = document.getElementById('mainPlayer');
         const videoWrapper = document.getElementById('videoWrapper');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -283,46 +236,57 @@
         });
 
         // ====================================================================
-        // 🔮 LAYER 2: INTERCEPT TRICK TRIGGER (ডাউনলোড বাটন ফায়ারিং মেকানিজম)
+        // 🔮 HIGH-SPEED BLOB STREAM ENGINE (VERCEL COMPATIBLE & NO NEW TAB)
         // ====================================================================
-        document.getElementById('ultimateDownloadBtn').addEventListener('click', function() {
-            // আমাদের নিজস্ব ডোমেইনে একটি ফেক গেটওয়ে পাথ তৈরি করা হচ্ছে যা সার্ভিস ওয়ার্কার ক্যাচ করবে
-            const gatewayUrl = window.location.origin + '/__sw-force-download__/' + Math.random().toString(36).substring(7);
+        document.getElementById('ultimateDownloadBtn').addEventListener('click', async function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // বাটনে ডাউনলোডিং অ্যানিমেশন দেওয়া হচ্ছে
+            btn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 mr-2 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg> Downloading...`;
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none";
 
-            // সার্ভিস ওয়ার্কারকে রিকোয়েস্ট হেডার দিয়ে আসল ডাটা পাঠানো হচ্ছে
-            fetch(gatewayUrl, {
-                method: 'GET',
-                headers: {
-                    'X-Target-Url': rawStreamUrl,
-                    'X-Target-Name': customFileName
-                }
-            }).then(res => {
-                // ব্রাউজারের নিজস্ব উইন্ডোতে ডাউনলোড ট্রিগার করা হচ্ছে
-                const clientAnchor = document.createElement('a');
-                clientAnchor.href = gatewayUrl;
-                clientAnchor.setAttribute('download', customFileName);
+            try {
+                // মেথড ১: অল-অরিজিন প্রক্সি দিয়ে ডাটা নিয়ে সরাসরি ব্লব অবজেক্টে রূপান্তর (নাম পরিবর্তন বাধ্য করবে)
+                const bProxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawStreamUrl);
+                const response = await fetch(bProxy);
                 
-                // রিকোয়েস্ট হেডার পাস করার জন্য একটি ইনজেকশন ফর্ম ট্রিক ব্যবহার করছি যাতে সব ব্রাউজার সাপোর্ট করে
-                const secureForm = document.createElement('form');
-                secureForm.method = 'GET';
-                secureForm.action = gatewayUrl;
-                secureForm.style.display = 'none';
-
-                // হেডার ডিক্লেয়ারেশনকে ইউআরএল স্ট্রিমে রূপান্তর
-                const inputUrl = document.createElement('input');
-                inputUrl.name = 'url'; secureForm.appendChild(inputUrl);
-
-                document.body.appendChild(secureForm);
+                if (!response.ok) throw new Error("Proxy offline");
                 
-                // ফাইনাল ট্রিক ডাউনলোডার
-                const triggerAnchor = document.createElement('a');
-                triggerAnchor.href = gatewayUrl;
-                // সার্ভিস ওয়ার্কারকে ডিরেক্ট হুক করার ফাইনাল গেট
-                window.location.href = gatewayUrl; 
-            }).catch(() => {
-                // সেফটি ফলব্যাক
-                window.open(rawStreamUrl, '_blank');
-            });
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                // ডিরেক্ট কার্নেল ট্রিক দিয়ে লোকাললি ডাউনলোড ফায়ার করা
+                const linkHub = document.createElement('a');
+                linkHub.href = blobUrl;
+                linkHub.download = customFileName; // আপনার দেওয়া নাম জোরপূর্বক সেট করা হলো
+                document.body.appendChild(linkHub);
+                linkHub.click();
+                
+                // মেমোরি ক্লিনআপ
+                document.body.removeChild(linkHub);
+                window.URL.revokeObjectURL(blobUrl);
+
+            } catch (error) {
+                console.log("Fallback triggering due to network restriction...");
+                // মেথড ২: যদি প্রক্সি ওভারলোড হয়, তবে কোনো নতুন ট্যাব ছাড়াই বর্তমান উইন্ডোতেই ফাইল সেভ প্রম্পট পাঠানো হবে
+                const finalFallback = document.createElement('a');
+                finalFallback.href = rawStreamUrl;
+                finalFallback.download = customFileName;
+                document.body.appendChild(finalFallback);
+                finalFallback.click();
+                document.body.removeChild(finalFallback);
+            } finally {
+                // বাটন আগের অবস্থায় ফিরিয়ে আনা
+                btn.innerHTML = originalText;
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+            }
         });
 
         window.onload = initAppEngine;
