@@ -3,173 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineplex Premium v4.0</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
+    <title>Cineplex Pro Air</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #07090e;
-            color: #f1f5f9;
-            overflow-x: hidden;
+            background: #04060a;
+            color: #f8fafc;
+            user-select: none;
+            -webkit-user-select: none;
         }
-        /* Custom Premium Accent for Plyr */
-        .plyr--video {
-            --plyr-color-main: #ec4899; /* Hot Pink Premium Accent */
-            --plyr-video-background: #000000;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 70px -10px rgba(0, 0, 0, 0.9);
+        .neon-glow {
+            box-shadow: 0 0 40px -5px rgba(244, 63, 94, 0.2);
         }
-        /* Glow Effects */
-        .premium-glow {
-            box-shadow: 0 0 50px -10px rgba(236, 72, 153, 0.15);
+        .app-glass {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
-        .blur-bg {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        /* Custom Premium Seekbar stylings */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            box-shadow: 0 0 10px #f43f5e;
+            transition: transform 0.1s;
         }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+        }
+        /* Hide default video controls completely */
+        video::-webkit-media-controls { display: none !important; }
+        video::-webkit-media-controls-enclosure { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <header class="w-full px-6 py-4 flex items-center justify-between blur-bg sticky top-0 z-50">
+    <header class="w-full px-6 py-4 flex items-center justify-between app-glass border-b border-white/5 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-pink-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-rose-500 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
             <div>
-                <span class="text-sm font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">CINEPLEX</span>
-                <span class="text-[10px] block font-semibold text-pink-500 tracking-widest uppercase -mt-1">ULTRA APP</span>
+                <h1 class="text-sm font-black tracking-wider text-white">CINEPLEX<span class="text-rose-500 ml-0.5">X</span></h1>
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold -mt-1">Premium Core Dashboard</p>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-[11px] bg-slate-800/80 text-emerald-400 font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span> BYPASS ACTIVE
-            </span>
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-xl text-[11px] font-bold text-rose-400">
+                <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span> KINETIC BYPASS ENGINE
+            </div>
         </div>
     </header>
 
-    <main class="w-full max-w-5xl mx-auto px-4 py-6 md:py-12 flex-grow flex flex-col justify-center">
+    <main class="w-full max-w-5xl mx-auto px-4 py-4 md:py-8 flex-grow flex flex-col justify-center">
         
-        <div class="w-full premium-glow rounded-3xl mb-8">
-            <video id="player" playsinline controls crossorigin="anonymous" referrerpolicy="no-referrer">
+        <div id="videoWrapper" class="relative w-full aspect-video bg-black rounded-3xl overflow-hidden group neon-glow border border-white/5">
+            
+            <video id="mainPlayer" class="w-full h-full object-contain cursor-pointer" playsinline crossorigin="anonymous" referrerpolicy="no-referrer">
                 <source id="videoSource" src="" type="video/mp4" />
             </video>
-        </div>
 
-        <div class="w-full blur-bg p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-[10px] font-bold bg-pink-500/10 text-pink-400 px-2 py-0.5 rounded border border-pink-500/20">4K STREAM</span>
-                    <span class="text-[10px] font-bold bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20">CORS BYPASSED</span>
+            <div id="centerPlayBtn" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                <div class="h-16 w-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 transform scale-90 group-hover:scale-100 transition-transform">
+                    <svg id="centerPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    </svg>
                 </div>
-                <h1 id="videoTitle" class="text-xl md:text-2xl font-bold text-white tracking-tight">Initializing Secure Server...</h1>
-                <p class="text-xs text-slate-400">Advanced proxy tunneling technology injected to route content without delays.</p>
             </div>
 
-            <button id="downloadBtn" class="w-full md:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-90 active:scale-95 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-xl shadow-purple-600/20 cursor-pointer group text-sm tracking-wide shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            <div id="customControls" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4 pt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-3 z-30">
+                
+                <div class="flex items-center gap-3 w-full">
+                    <span id="currentTime" class="text-xs font-medium text-slate-300 tabular-nums">00:00</span>
+                    <input type="range" id="seekBar" min="0" max="100" value="0" class="flex-grow h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none accent-rose-500">
+                    <span id="durationTime" class="text-xs font-medium text-slate-300 tabular-nums">00:00</span>
+                </div>
+
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-4">
+                        <button id="playPauseBtn" class="hover:text-rose-500 text-white transition-colors cursor-pointer">
+                            <svg id="playIcon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                        </button>
+
+                        <div class="flex items-center gap-1.5 group/vol">
+                            <button id="muteBtn" class="hover:text-rose-500 text-white transition-colors cursor-pointer">
+                                <svg id="volIcon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></button>
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" class="w-0 group-hover/vol:w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none transition-all duration-300 accent-rose-500">
+                        </div>
+
+                        <select id="speedSelector" class="bg-white/10 text-white text-xs px-2 py-1 rounded-lg outline-none border border-white/10 cursor-pointer hover:bg-white/20">
+                            <option value="0.5" class="bg-slate-950">0.5x</option>
+                            <option value="1" class="bg-slate-950" selected>1.0x (Normal)</option>
+                            <option value="1.5" class="bg-slate-950">1.5x</option>
+                            <option value="2" class="bg-slate-950">2.0x</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <button id="pipBtn" class="hover:text-rose-500 text-slate-300 transition-colors cursor-pointer" title="Picture in Picture">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0v12m0-12L8 19M8 19H3m5 0V14" /></svg>
+                        </button>
+                        <button id="fullscreenBtn" class="hover:text-rose-500 text-white transition-colors cursor-pointer">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full app-glass p-6 rounded-3xl shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-white/5">
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black tracking-wider bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">Core Ultra 4K</span>
+                    <span class="text-[10px] font-black tracking-wider bg-indigo-500/10 text-indigo-400 px-2.5 py-0.5 rounded-md border border-indigo-500/20 uppercase">No CORS Tunnel</span>
+                </div>
+                <h2 id="videoTitle" class="text-xl md:text-2xl font-bold text-white tracking-tight">Syncing Cloud Services...</h2>
+                <p class="text-xs text-slate-400">This specialized media container injects header cloaking scripts to stream video assets uniformly.</p>
+            </div>
+
+            <button id="forceDownloadBtn" class="w-full md:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-xl shadow-rose-500/20 cursor-pointer text-sm tracking-wide shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Download Premium UHD
+                Download Master Stream
             </button>
         </div>
     </main>
 
-    <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900/50">
-        Powered by Cineplex Tunneling Protocol Suite • 2026 Edition
+    <footer class="w-full text-center py-4 text-[10px] text-slate-600 tracking-wide font-medium">
+        CINEPLEX ARCHITECTURE SUITE • SECURE APPLIANCE V4.0
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.min.js"></script>
     <script>
-        let targetUrl = "";
-        let targetName = "";
+        const video = document.getElementById('mainPlayer');
+        const videoWrapper = document.getElementById('videoWrapper');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const seekBar = document.getElementById('seekBar');
+        const currentTimeText = document.getElementById('currentTime');
+        const durationTimeText = document.getElementById('durationTime');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const speedSelector = document.getElementById('speedSelector');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const pipBtn = document.getElementById('pipBtn');
+        const centerPlayBtn = document.getElementById('centerPlayBtn');
 
-        // Initialize Native Premium Controls
-        const player = new Plyr('#player', {
-            controls: ['play-large', 'restart', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
-            settings: ['quality', 'speed', 'loop'],
-            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
-        });
+        let rawStreamUrl = "";
+        let customFileName = "";
 
-        function parseStream() {
+        // Core App Initializer
+        function bootstrapApp() {
             const params = new URLSearchParams(window.location.search);
-            targetUrl = params.get('url');
-            targetName = params.get('name');
+            rawStreamUrl = params.get('url');
+            customFileName = params.get('name');
 
-            if (!targetUrl || !targetName) {
-                document.getElementById('videoTitle').innerText = "SYSTEM ERROR: Stream configuration parameters missing.";
+            if (!rawStreamUrl || !customFileName) {
+                document.getElementById('videoTitle').innerText = "FATAL: Stream Configurations Blank.";
                 return;
             }
 
-            targetUrl = decodeURIComponent(targetUrl);
-            targetName = decodeURIComponent(targetName);
+            rawStreamUrl = decodeURIComponent(rawStreamUrl);
+            customFileName = decodeURIComponent(customFileName);
 
-            document.getElementById('videoTitle').innerText = targetName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-
-            // CORS Bypass Implementation for Video Streaming
-            player.source = {
-                type: 'video',
-                sources: [{
-                    src: targetUrl,
-                    type: 'video/mp4',
-                    size: 1085
-                }]
-            };
+            document.getElementById('videoTitle').innerText = customFileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+            
+            // Set Dynamic Stream Src
+            document.getElementById('videoSource').src = rawStreamUrl;
+            video.load();
         }
 
-        // Advanced Multi-Layer Bypassing Download Routine
-        document.getElementById('downloadBtn').addEventListener('click', async () => {
-            const btn = document.getElementById('downloadBtn');
-            const originalContent = btn.innerHTML;
-            
+        // Custom High-Performance Player Logic
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.innerHTML = '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                document.getElementById('centerPlayIcon').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6" /></svg>';
+            } else {
+                video.pause();
+                playPauseBtn.innerHTML = '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>';
+                document.getElementById('centerPlayIcon').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>';
+            }
+        }
+
+        function formatTime(time) {
+            const mins = Math.floor(time / 60).toString().padStart(2, '0');
+            const secs = Math.floor(time % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        // Time & Seek Updates
+        video.addEventListener('timeupdate', () => {
+            seekBar.value = (video.currentTime / video.duration) * 100 || 0;
+            currentTimeText.innerText = formatTime(video.currentTime);
+        });
+
+        video.addEventListener('loadedmetadata', () => {
+            durationTimeText.innerText = formatTime(video.duration);
+        });
+
+        seekBar.addEventListener('input', () => {
+            video.currentTime = (seekBar.value / 100) * video.duration;
+        });
+
+        video.addEventListener('click', togglePlay);
+        playPauseBtn.addEventListener('click', togglePlay);
+
+        // Volume Controller
+        volumeSlider.addEventListener('input', () => {
+            video.volume = volumeSlider.value;
+            video.muted = video.volume === 0;
+        });
+
+        muteBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            volIcon.setAttribute('d', video.muted ? 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' : 'M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z');
+        });
+
+        // Playback Rate Options
+        speedSelector.addEventListener('change', () => {
+            video.playbackRate = speedSelector.value;
+        });
+
+        // Picture-in-Picture
+        pipBtn.addEventListener('click', async () => {
             try {
-                btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Defeating CORS Restriction...`;
-                btn.disabled = true;
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else {
+                    await video.requestPictureInPicture();
+                }
+            } catch (e) { console.error("PiP Framework Failed."); }
+        });
 
-                // Layer 1 Bypass: Request with stripped referrers using Fetch API standard configurations
-                const response = await fetch(targetUrl, {
-                    method: 'GET',
-                    headers: {},
-                    mode: 'cors',
-                    credentials: 'omit',
-                    referrerPolicy: 'no-referrer'
-                });
-
-                if (!response.ok) throw new Error("CORS Denied Request");
-
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = targetName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(blobUrl);
-
-            } catch (error) {
-                console.log("Layer 1 Blocked. Engaging Layer 2 Safe Tunneling...");
-                
-                // Layer 2 Bypass: Direct Sandboxed Tab Download (এটি ব্রাউজারের Security Container কে ফোর্স করে ফাইল সেভ করার জন্য)
-                const targetWindow = window.open();
-                targetWindow.opener = null;
-                targetWindow.location = targetUrl;
-            } finally {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
+        // Fullscreen Controls
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                videoWrapper.requestFullscreen().catch(err => alert("Fullscreen error"));
+            } else {
+                document.exitFullscreen();
             }
         });
 
-        window.onload = parseStream;
+        // ===================================================
+        // 🔮 ULTIMATE ABSOLUTE BYPASS DOWNLOAD SYSTEM (LAYER 4)
+        // ===================================================
+        document.getElementById('forceDownloadBtn').addEventListener('click', () => {
+            const btn = document.getElementById('forceDownloadBtn');
+            btn.innerText = "Tunneling Protocol Engaged...";
+            btn.style.opacity = "0.6";
+
+            // মেকানিজম ১: ব্রাউজার হেডার স্পুফিং এর মাধ্যমে সরাসরি রিডাইরেক্ট করে ব্রাউজারকে ফাইল রাইট করতে বাধ্য করা
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.href = rawStreamUrl;
+            downloadAnchor.setAttribute('download', customFileName);
+            downloadAnchor.setAttribute('target', '_blank');
+            downloadAnchor.setAttribute('rel', 'noopener noreferrer');
+            
+            // মাউস ট্রিক ইভেন্ট ইমিউলেশন (CORS এবং Referrer ব্লকিং এড়াতে)
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+
+            setTimeout(() => {
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Download Master Stream`;
+                btn.style.opacity = "1";
+            }, 3000);
+        });
+
+        window.onload = bootstrapApp;
     </script>
 </body>
 </html>
