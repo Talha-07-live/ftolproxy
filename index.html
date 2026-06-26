@@ -2,294 +2,579 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineplex Studio Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Talha's Premium Master Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #05070f;
-            color: #f1f5f9;
-            user-select: none;
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
         }
-        .premium-glow {
-            box-shadow: 0 25px 60px -15px rgba(244, 63, 94, 0.25);
+        body, html {
+            width: 100%; height: 100%; background: #000;
+            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .blur-panel {
-            background: rgba(13, 18, 33, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+
+        .player-wrapper {
+            position: relative; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; background: #020206;
         }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
+
+        video {
+            width: 100%; height: 100%; object-fit: contain; z-index: 1;
         }
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
+
+        .player-controls {
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(2,2,6,0.7) 0%, transparent 25%, transparent 75%, rgba(2,2,6,0.95) 100%);
+            display: flex; flex-direction: column; justify-content: space-between;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5; padding: 20px;
         }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 14px;
-            width: 14px;
-            border-radius: 50%;
-            background: #f43f5e;
-            cursor: pointer;
-            margin-top: -4.5px;
-            box-shadow: 0 0 10px #f43f5e;
+        
+        .player-controls.show-controls {
+            opacity: 1 !important; pointer-events: auto !important;
         }
-        video::-webkit-media-controls { display: none !important; }
-        video::-webkit-media-controls-enclosure { display: none !important; }
+
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center; width: 100%;
+        }
+        
+        .live-tag {
+            background: #ff0055; color: #fff; font-size: 11px; font-weight: 800;
+            padding: 5px 12px; border-radius: 6px; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255,0,85,0.5); display: flex; align-items: center; gap: 6px;
+        }
+        
+        .live-tag::before {
+            content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%;
+            animation: blink 1s infinite alternate;
+        }
+        
+        .buffer-status-badge {
+            background: rgba(122, 60, 255, 0.15); border: 1px solid rgba(122, 60, 255, 0.35);
+            color: #00f2fe; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 8px;
+            text-shadow: 0 0 8px rgba(0, 242, 254, 0.4); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .center-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 65px; height: 65px; background: rgba(122, 60, 255, 0.2);
+            border: 2px solid #7a3cff; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; color: #fff; font-size: 24px;
+            cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); 
+            opacity: 0; pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 6; 
+            box-shadow: 0 0 30px rgba(122,60,255,0.4);
+        }
+        
+        .center-btn.show-controls {
+            opacity: 1 !important; pointer-events: auto !important;
+        }
+
+        .seek-ripple {
+            position: absolute; width: 40%; height: 100%; top: 0;
+            background: rgba(255, 255, 255, 0.08); display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            color: #fff; font-size: 14px; font-weight: bold; opacity: 0;
+            pointer-events: none; z-index: 4; transition: opacity 0.2s;
+        }
+        .seek-ripple.left { left: 0; border-radius: 0 100px 100px 0; }
+        .seek-ripple.right { right: 0; border-radius: 100px 0 0 100px; }
+        .seek-ripple i { font-size: 24px; margin-bottom: 8px; }
+
+        .bottom-bar {
+            width: 100%; display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .progress-container {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.08);
+            border-radius: 10px; position: relative; cursor: pointer; transition: height 0.1s;
+        }
+        .progress-container:hover { height: 9px; }
+        
+        .progress-bar {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+            background: linear-gradient(90deg, #7a3cff, #00f2fe); border-radius: 10px; z-index: 3;
+        }
+        
+        .buffer-bar {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+            background: rgba(255, 255, 255, 0.22); border-radius: 10px; z-index: 2;
+            transition: width 0.3s ease;
+        }
+
+        .control-row {
+            display: flex; justify-content: space-between; align-items: center; color: #fff;
+        }
+        
+        .left-controls, .right-controls {
+            display: flex; align-items: center; gap: 22px;
+        }
+        
+        .control-btn {
+            background: none; border: none; color: #fff; font-size: 17px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover { color: #00f2fe; filter: drop-shadow(0 0 8px #00f2fe); }
+        
+        .time-display { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.65); letter-spacing: 0.5px; }
+
+        .spinner {
+            position: absolute; width: 55px; height: 55px;
+            border: 4px solid rgba(0, 242, 254, 0.08); border-top-color: #00f2fe;
+            border-radius: 50%; animation: spin 0.7s linear infinite; display: none; z-index: 10;
+            filter: drop-shadow(0 0 15px #00f2fe);
+        }
+
+        .settings-panel {
+            position: absolute; bottom: 70px; right: 20px;
+            background: rgba(10, 10, 20, 0.95); border: 1px solid rgba(122, 60, 255, 0.5);
+            border-radius: 12px; width: 160px; display: none; flex-direction: column;
+            overflow-y: auto; max-height: 200px; z-index: 12; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .settings-panel.active { display: flex; }
+        .settings-panel button {
+            background: none; border: none; color: #fff; padding: 12px 16px;
+            text-align: left; font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;
+        }
+        .settings-panel button:hover { background: rgba(122, 60, 255, 0.3); color: #00f2fe; }
+        .settings-panel button.selected { color: #00f2fe; font-weight: 700; }
+        .settings-panel button.selected::after { content: '✓'; font-weight: bold; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes blink { from { opacity: 0.3; } to { opacity: 1; } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+<body>
 
-    <header class="w-full px-6 py-4 flex items-center justify-between blur-panel border-b border-white/5 sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-rose-500 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                </svg>
-            </div>
-            <div>
-                <h1 class="text-sm font-black tracking-widest text-white">CINEPLEX<span class="text-rose-500">ULTRA</span></h1>
-                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-extrabold -mt-1">Stable Core Engine v8.0</p>
-            </div>
-        </div>
-        <div>
-            <span class="text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl font-black text-emerald-400 tracking-wider flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> BLOB ENGINE ACTIVE
-            </span>
-        </div>
-    </header>
+<div class="player-wrapper" id="playerContainer">
+    
+    <div class="spinner" id="loadingSpinner"></div>
+    
+    <div class="seek-ripple left" id="rippleLeft"><i class="fas fa-backward"></i>10s</div>
+    <div class="seek-ripple right" id="rippleRight"><i class="fas fa-forward"></i>10s</div>
 
-    <main class="w-full max-w-4xl mx-auto px-4 py-6 flex-grow flex flex-col justify-center">
+    <div class="center-btn" id="midPlayBtn">
+        <i class="fas fa-play"></i>
+    </div>
+
+    <video id="videoEngine" playsinline webkit-playsinline></video>
+
+    <div class="settings-panel" id="settingsPanel"></div>
+
+    <div class="player-controls" id="controlOverlay">
         
-        <div id="videoWrapper" class="relative w-full aspect-video bg-black rounded-3xl overflow-hidden group premium-glow border border-white/5">
+        <div class="top-bar">
+            <div class="live-tag" id="liveTag">LIVE</div>
+            <div class="buffer-status-badge" id="bufferStats">Syncing...</div>
+        </div>
+
+        <div class="bottom-bar">
             
-            <video id="mainPlayer" class="w-full h-full object-contain cursor-pointer" playsinline>
-                <source id="videoSource" src="" type="video/mp4" />
-            </video>
+            <div class="progress-container" id="timeline">
+                <div class="buffer-bar" id="bufferedTimeline"></div>
+                <div class="progress-bar" id="currentTimeline"></div>
+            </div>
 
-            <div id="centerOverlay" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
-                <div class="h-16 w-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 transform scale-90 group-hover:scale-100 transition-all">
-                    <svg id="centerPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    </svg>
+            <div class="control-row">
+                <div class="left-controls">
+                    <button class="control-btn" id="playNavBtn"><i class="fas fa-play"></i></button>
+                    <button class="control-btn" id="muteBtn"><i class="fas fa-volume-up"></i></button>
+                    <div class="time-display" id="timeShow">00:00 / Syncing Stream</div>
+                </div>
+                <div class="right-controls">
+                    <button class="control-btn" style="display:none; color:#00f2fe; font-weight:700;" id="premiumDlBtn"><i class="fas fa-download"></i> DOWNLOAD</button>
+                    <button class="control-btn" style="font-size:12px; font-weight:700;" id="goLiveBtn"><i class="fas fa-satellite-dish" style="color:#ff0055;"></i>GO LIVE</button>
+                    <button class="control-btn" id="gearBtn"><i class="fas fa-cog"></i></button>
+                    <button class="control-btn" id="fullScreenBtn"><i class="fas fa-expand"></i></button>
                 </div>
             </div>
 
-            <div id="customControls" class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/80 to-transparent p-5 pt-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-4 z-30">
+        </div>
+
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // ডায়নামিক সোর্স ডিটেকশন ইঞ্জিন
+        const channelId = urlParams.get('Talha');
+        let rawUrl = urlParams.get('url');
+        let customFileName = urlParams.get('name') || "Premium_Video.mp4";
+
+        let videoSrc = "";
+        let isLiveStream = true;
+
+        if (channelId) {
+            videoSrc = `https://m3u8-proxy-r8j3.vercel.app/checklist/${channelId}.m3u8`;
+            isLiveStream = true;
+        } else if (rawUrl) {
+            videoSrc = decodeURIComponent(rawUrl);
+            customFileName = decodeURIComponent(customFileName);
+            isLiveStream = false;
+        } else {
+            // ডিফল্ট সোর্স যদি কিছু না পাওয়া যায়
+            videoSrc = `https://m3u8-proxy-r8j3.vercel.app/checklist/androstreamlivetrt1.m3u8`;
+            isLiveStream = true;
+        }
+
+        const video = document.getElementById('videoEngine');
+        const spinner = document.getElementById('loadingSpinner');
+        const midPlayBtn = document.getElementById('midPlayBtn');
+        const playNavBtn = document.getElementById('playNavBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const bufferStats = document.getElementById('bufferStats');
+        const currentTimeline = document.getElementById('currentTimeline');
+        const bufferedTimeline = document.getElementById('bufferedTimeline');
+        const timeShow = document.getElementById('timeShow');
+        const controlOverlay = document.getElementById('controlOverlay');
+        const playerContainer = document.getElementById('playerContainer');
+        const timeline = document.getElementById('timeline');
+        const goLiveBtn = document.getElementById('goLiveBtn');
+        const fullScreenBtn = document.getElementById('fullScreenBtn');
+        const gearBtn = document.getElementById('gearBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const premiumDlBtn = document.getElementById('premiumDlBtn');
+        const liveTag = document.getElementById('liveTag');
+
+        let hlsEngine = null;
+        let controlsTimeout;
+        let isSeeking = false;
+        let lastTap = 0;
+
+        // মোড অনুযায়ী UI কনফিগারেশন পরিবর্তন
+        if (!isLiveStream) {
+            liveTag.style.display = 'none';
+            goLiveBtn.style.display = 'none';
+            premiumDlBtn.style.display = 'block';
+        }
+
+        if (typeof Hls !== 'undefined' && Hls.isSupported() && (videoSrc.includes('.m3u8') || isLiveStream)) {
+            const hlsConfig = {
+                maxBufferLength: 60,             
+                maxMaxBufferLength: 120,         
+                liveBackBufferLength: 60,        
+                enableWorker: true,
+                lowLatencyMode: false,            
+                liveSyncDuration: 120, 
+                manifestLoadingTimeOut: 15000,
+                manifestLoadingMaxRetry: 5,
+                fragLoadingTimeOut: 20000,
+                fragLoadingMaxRetry: 5,
+                levelLoadingTimeOut: 15000,
+                levelLoadingMaxRetry: 5,
+                abrEwmaFastLive: 2.0,
+                abrEwmaSlowLive: 9.0,
+                testBandwidth: true
+            };
+
+            const hls = new Hls(hlsConfig);
+            hlsEngine = hls;
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                hls.currentLevel = -1;
+                video.play().catch(() => showControls());
+                setTimeout(setupQualityMenu, 1000);
+            });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR: hls.startLoad(); break;
+                        case Hls.ErrorTypes.MEDIA_ERROR: hls.recoverMediaError(); break;
+                        default: hls.recoverMediaError(); break;
+                    }
+                }
+            });
+
+        } else {
+            // MP4 ফাইল অথবা সাধারণ ব্রাউজার/iOS সাফারির জন্য ডিরেক্ট ইঞ্জিন
+            video.src = videoSrc;
+            gearBtn.style.display = 'none';
+            video.addEventListener('loadedmetadata', () => {
+                video.play().catch(() => showControls());
+            });
+        }
+
+        video.addEventListener('waiting', () => spinner.style.display = 'block');
+        video.addEventListener('playing', () => spinner.style.display = 'none');
+        video.addEventListener('stalled', () => {
+            spinner.style.display = 'block';
+            if(hlsEngine) hlsEngine.startLoad(); 
+        });
+
+        // ইউনিভার্সাল টাইম ও টাইমলাইন লুপ (লাইভ এবং ভিডিও ফাইল উভয়ের জন্য ১০০% রেডি)
+        setInterval(() => {
+            if (video.buffered.length > 0 && !isSeeking) {
+                const currentTime = video.currentTime;
+                let start = 0;
+                let end = video.duration || currentTime;
+
+                if (isLiveStream && hlsEngine && hlsEngine.liveSyncPosition) {
+                    start = hlsEngine.liveSyncPosition - 300;
+                    end = hlsEngine.liveSyncPosition;
+                }
+                if(start < 0) start = 0;
                 
-                <div class="flex items-center gap-3 w-full">
-                    <span id="currentTime" class="text-xs font-bold text-slate-300 tabular-nums">00:00</span>
-                    <input type="range" id="seekBar" min="0" max="100" value="0" class="flex-grow cursor-pointer outline-none">
-                    <span id="durationTime" class="text-xs font-bold text-slate-300 tabular-nums">00:00</span>
-                </div>
+                let totalWindow = end - start;
+                let currentPos = currentTime - start;
+                if(currentPos < 0) currentPos = 0;
 
-                <div class="flex items-center justify-between w-full">
-                    <div class="flex items-center gap-5">
-                        <button id="playPauseBtn" class="hover:text-rose-500 text-white transition-colors cursor-pointer outline-none">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                        </button>
+                const currentPercent = totalWindow > 0 ? (currentPos / totalWindow) * 100 : 0;
+                currentTimeline.style.width = Math.min(currentPercent, 100) + "%";
 
-                        <div class="flex items-center gap-2 group/vol">
-                            <button id="muteBtn" class="hover:text-rose-500 text-slate-200 transition-colors cursor-pointer outline-none">
-                                <svg id="volIcon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg></button>
-                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" class="w-0 group-hover/vol:w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none accent-rose-500 transition-all duration-200">
-                        </div>
+                let activeBufferEnd = currentTime;
+                for (let i = 0; i < video.buffered.length; i++) {
+                    if (video.buffered.start(i) <= currentTime && video.buffered.end(i) >= currentTime) {
+                        activeBufferEnd = video.buffered.end(i);
+                    }
+                }
+                
+                let bufferPos = activeBufferEnd - start;
+                const bufferPercent = totalWindow > 0 ? (bufferPos / totalWindow) * 100 : 0;
+                bufferedTimeline.style.width = Math.min(bufferPercent, 100) + "%";
 
-                        <select id="speedSelector" class="bg-white/5 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg outline-none cursor-pointer font-bold hover:bg-white/10">
-                            <option value="0.5" class="bg-slate-950">0.5x</option>
-                            <option value="1" class="bg-slate-950" selected>1.0x Normal</option>
-                            <option value="1.5" class="bg-slate-950">1.5x</option>
-                            <option value="2" class="bg-slate-950">2.0x</option>
-                        </select>
-                    </div>
+                const aheadAmount = activeBufferEnd - currentTime;
+                bufferStats.innerText = `Buffer: ${Math.round(Math.max(0, aheadAmount))}s`;
+                
+                if (isLiveStream) {
+                    timeShow.innerText = `${formatTime(currentTime)} / Live Stream`;
+                } else {
+                    timeShow.innerText = `${formatTime(currentTime)} / ${formatTime(video.duration)}`;
+                }
+            }
+        }, 400);
 
-                    <div class="flex items-center gap-4">
-                        <button id="pipBtn" class="hover:text-rose-500 text-slate-300 transition-colors cursor-pointer outline-none">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0v12m0-12L8 19M8 19H3m5 0V14" /></svg>
-                        </button>
-                        <button id="fullscreenBtn" class="hover:text-rose-500 text-white transition-colors cursor-pointer outline-none">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        function setupQualityMenu() {
+            if (!hlsEngine || !hlsEngine.levels || hlsEngine.levels.length === 0) {
+                gearBtn.style.display = 'none'; 
+                return;
+            }
+            
+            gearBtn.style.display = 'block';
+            let menuHtml = `<button class="quality-btn selected" data-level="-1">Auto</button>`;
+            
+            hlsEngine.levels.forEach((level, index) => {
+                let name = level.name || (level.height ? `${level.height}p` : `Stream ${index + 1}`);
+                menuHtml += `<button class="quality-btn" data-level="${index}">${name}</button>`;
+            });
+            
+            settingsPanel.innerHTML = menuHtml;
 
-        <div class="w-full blur-panel p-6 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-6">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">VERCEL COMPATIBLE</span>
-                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">FORCE NAME SAVE</span>
-                </div>
-                <h2 id="videoTitle" class="text-xl font-bold text-white tracking-tight">Syncing Stream Core...</h2>
-                <p id="fileNameSubtitle" class="text-xs text-slate-400 font-medium break-all max-w-lg">Filename profile active.</p>
-            </div>
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.onclick = function(e) {
+                    e.stopPropagation();
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    const level = parseInt(this.getAttribute('data-level'));
+                    hlsEngine.currentLevel = level; 
+                    settingsPanel.classList.remove('active');
+                };
+            });
+        }
 
-            <button id="ultimateDownloadBtn" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 hover:opacity-95 active:scale-95 text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-xl shadow-rose-500/25 cursor-pointer text-sm tracking-wide shrink-0 outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download Video
-            </button>
-        </div>
-    </main>
+        gearBtn.onclick = function(e) {
+            e.stopPropagation();
+            settingsPanel.classList.toggle('active');
+        };
 
-    <footer class="w-full text-center py-4 text-[10px] text-slate-600 font-extrabold tracking-widest">
-        CINEPLEX MASTER ARCHITECTURE V8.0
-    </footer>
+        function togglePlay() {
+            settingsPanel.classList.remove('active');
+            if (video.paused) { video.play().catch(() => {}); } else { video.pause(); }
+        }
 
-    <script>
-        const video = document.getElementById('mainPlayer');
-        const videoWrapper = document.getElementById('videoWrapper');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const seekBar = document.getElementById('seekBar');
-        const currentTimeText = document.getElementById('currentTime');
-        const durationTimeText = document.getElementById('durationTime');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const speedSelector = document.getElementById('speedSelector');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const pipBtn = document.getElementById('pipBtn');
+        video.addEventListener('play', () => {
+            midPlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playNavBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            resetControlsTimeout();
+        });
 
-        let rawStreamUrl = "";
-        let customFileName = "";
+        video.addEventListener('pause', () => {
+            midPlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playNavBtn.innerHTML = '<i class="fas fa-play"></i>';
+            showControls();
+        });
 
-        function initAppEngine() {
-            const params = new URLSearchParams(window.location.search);
-            rawStreamUrl = params.get('url');
-            customFileName = params.get('name');
+        function toggleMute() {
+            if (video.muted) {
+                video.muted = false;
+                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            } else {
+                video.muted = true;
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            }
+        }
 
-            if (!rawStreamUrl || !customFileName) {
-                document.getElementById('videoTitle').innerText = "FATAL: Config Vector Missing.";
+        function seekVideo(e) {
+            const rect = timeline.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            if (!clientX) return;
+            
+            const pos = (clientX - rect.left) / rect.width;
+            let start = 0;
+            let end = video.duration || video.currentTime;
+
+            if (isLiveStream && hlsEngine && hlsEngine.liveSyncPosition) {
+                start = hlsEngine.liveSyncPosition - 300;
+                end = hlsEngine.liveSyncPosition;
+            }
+            if(start < 0) start = 0;
+            
+            isSeeking = true;
+            video.currentTime = start + (pos * (end - start));
+            setTimeout(() => { isSeeking = false; }, 300);
+        }
+
+        function goLive() {
+            if (hlsEngine && hlsEngine.liveSyncPosition) {
+                video.currentTime = hlsEngine.liveSyncPosition - 10; 
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                playerContainer.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds)) return "00:00";
+            let min = Math.floor(seconds / 60);
+            let sec = Math.floor(seconds % 60);
+            return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+        }
+
+        function showControls() {
+            clearTimeout(controlsTimeout);
+            controlOverlay.classList.add('show-controls');
+            midPlayBtn.classList.add('show-controls');
+        }
+
+        function hideControls() {
+            if (!video.paused) {
+                controlOverlay.classList.remove('show-controls');
+                midPlayBtn.classList.remove('show-controls');
+                settingsPanel.classList.remove('active');
+            }
+        }
+
+        function resetControlsTimeout() {
+            showControls();
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(hideControls, 3000);
+        }
+
+        playerContainer.addEventListener('touchend', (e) => {
+            if (e.target.closest('.control-btn') || e.target.closest('.progress-container') || e.target.closest('#midPlayBtn') || e.target.closest('#settingsPanel')) {
+                resetControlsTimeout();
                 return;
             }
 
-            rawStreamUrl = decodeURIComponent(rawStreamUrl);
-            customFileName = decodeURIComponent(customFileName);
-
-            document.getElementById('videoTitle').innerText = customFileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-            document.getElementById('fileNameSubtitle').innerText = "Target Save Name: " + customFileName;
+            const now = new Date().getTime();
+            const timesince = now - lastTap;
             
-            video.src = rawStreamUrl;
-            video.load();
-        }
-
-        function togglePlayback() {
-            if (video.paused) {
-                video.play().catch(e => console.log("Playback error"));
-                playPauseBtn.innerHTML = '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-                document.getElementById('centerPlayIcon').innerHTML = '<svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 9v6m4-6v6"/></svg>';
+            if (timesince < 300 && timesince > 0) {
+                const touchX = e.changedTouches[0].clientX;
+                const width = window.innerWidth;
+                
+                if (touchX > width / 2) {
+                    video.currentTime = Math.min(video.currentTime + 10, video.duration || video.currentTime + 10);
+                    triggerRipple('right');
+                } else {
+                    video.currentTime = Math.max(video.currentTime - 10, 0);
+                    triggerRipple('left');
+                }
             } else {
-                video.pause();
-                playPauseBtn.innerHTML = '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>';
-                document.getElementById('centerPlayIcon').innerHTML = '<svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>';
+                if (controlOverlay.classList.contains('show-controls')) {
+                    hideControls();
+                } else {
+                    resetControlsTimeout();
+                }
             }
+            lastTap = now;
+        });
+
+        function triggerRipple(side) {
+            const ripple = document.getElementById(side === 'right' ? 'rippleRight' : 'rippleLeft');
+            ripple.style.opacity = '1';
+            setTimeout(() => { ripple.style.opacity = '0'; }, 400);
         }
 
-        function formatTimeLayout(seconds) {
-            if (isNaN(seconds)) return "00:00";
-            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
-            return `${mins}:${secs}`;
-        }
-
-        video.addEventListener('timeupdate', () => {
-            if (!isNaN(video.duration) && video.duration > 0) {
-                seekBar.value = (video.currentTime / video.duration) * 100;
-                currentTimeText.innerText = formatTimeLayout(video.currentTime);
-            }
-        });
-
-        video.addEventListener('loadedmetadata', () => {
-            durationTimeText.innerText = formatTimeLayout(video.duration);
-        });
-
-        seekBar.addEventListener('input', () => {
-            if (!isNaN(video.duration)) {
-                video.currentTime = (seekBar.value / 100) * video.duration;
-            }
-        });
-
-        video.addEventListener('click', togglePlayback);
-        playPauseBtn.addEventListener('click', togglePlayback);
-        volumeSlider.addEventListener('input', () => { video.volume = volumeSlider.value; });
-        speedSelector.addEventListener('change', () => { video.playbackRate = parseFloat(speedSelector.value); });
-        pipBtn.addEventListener('click', () => { video.requestPictureInPicture().catch(e => {}); });
-        
-        video.addEventListener('dblclick', (e) => {
-            e.preventDefault();
-            if (!document.fullscreenElement) videoWrapper.requestFullscreen().catch(e => {});
-            else document.exitFullscreen();
-        });
-
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) videoWrapper.requestFullscreen().catch(e => {});
-            else document.exitFullscreen();
-        });
-
         // ====================================================================
-        // 🔮 HIGH-SPEED BLOB STREAM ENGINE (VERCEL COMPATIBLE & NO NEW TAB)
+        // 🔮 HIGH-SPEED BLOB DOWNLOAD ENGINE (VERCEL SAFE & NO ERROR)
         // ====================================================================
-        document.getElementById('ultimateDownloadBtn').addEventListener('click', async function() {
+        premiumDlBtn.addEventListener('click', async function(e) {
+            e.stopPropagation();
             const btn = this;
-            const originalText = btn.innerHTML;
+            const originalHtml = btn.innerHTML;
             
-            // বাটনে ডাউনলোডিং অ্যানিমেশন দেওয়া হচ্ছে
-            btn.innerHTML = `
-                <svg class="animate-spin h-5 w-5 mr-2 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg> Downloading...`;
-            btn.style.opacity = "0.7";
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> SAVING...`;
+            btn.style.opacity = "0.6";
             btn.style.pointerEvents = "none";
 
             try {
-                // মেথড ১: অল-অরিজিন প্রক্সি দিয়ে ডাটা নিয়ে সরাসরি ব্লব অবজেক্টে রূপান্তর (নাম পরিবর্তন বাধ্য করবে)
-                const bProxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawStreamUrl);
-                const response = await fetch(bProxy);
+                // অল-অরিজিন প্রক্সি ট্রিক দিয়ে ডাটা ব্লক এড়ানো হচ্ছে
+                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(videoSrc);
+                const resp = await fetch(proxyUrl);
+                if (!resp.ok) throw new Error("Proxy Restriction");
                 
-                if (!response.ok) throw new Error("Proxy offline");
+                const fileBlob = await resp.blob();
+                const localBlobUrl = window.URL.createObjectURL(fileBlob);
                 
-                const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
+                const dlGate = document.createElement('a');
+                dlGate.href = localBlobUrl;
+                dlGate.download = customFileName; // কাস্টম নাম জোরপূর্বক পুশ করা হলো
+                document.body.appendChild(dlGate);
+                dlGate.click();
                 
-                // ডিরেক্ট কার্নেল ট্রিক দিয়ে লোকাললি ডাউনলোড ফায়ার করা
-                const linkHub = document.createElement('a');
-                linkHub.href = blobUrl;
-                linkHub.download = customFileName; // আপনার দেওয়া নাম জোরপূর্বক সেট করা হলো
-                document.body.appendChild(linkHub);
-                linkHub.click();
-                
-                // মেমোরি ক্লিনআপ
-                document.body.removeChild(linkHub);
-                window.URL.revokeObjectURL(blobUrl);
-
-            } catch (error) {
-                console.log("Fallback triggering due to network restriction...");
-                // মেথড ২: যদি প্রক্সি ওভারলোড হয়, তবে কোনো নতুন ট্যাব ছাড়াই বর্তমান উইন্ডোতেই ফাইল সেভ প্রম্পট পাঠানো হবে
-                const finalFallback = document.createElement('a');
-                finalFallback.href = rawStreamUrl;
-                finalFallback.download = customFileName;
-                document.body.appendChild(finalFallback);
-                finalFallback.click();
-                document.body.removeChild(finalFallback);
+                document.body.removeChild(dlGate);
+                window.URL.revokeObjectURL(localBlobUrl);
+            } catch (err) {
+                // সিকিউর ফলব্যাক: প্রক্সি ডাউন থাকলেও ব্রাউজার প্রম্পটে ফোর্স ডাউনলোড করাবে
+                const fallbackGate = document.createElement('a');
+                fallbackGate.href = videoSrc;
+                fallbackGate.download = customFileName;
+                document.body.appendChild(fallbackGate);
+                fallbackGate.click();
+                document.body.removeChild(fallbackGate);
             } finally {
-                // বাটন আগের অবস্থায় ফিরিয়ে আনা
-                btn.innerHTML = originalText;
+                btn.innerHTML = originalHtml;
                 btn.style.opacity = "1";
                 btn.style.pointerEvents = "auto";
             }
         });
 
-        window.onload = initAppEngine;
-    </script>
+        midPlayBtn.onclick = togglePlay;
+        playNavBtn.onclick = togglePlay;
+        muteBtn.onclick = toggleMute;
+        timeline.onclick = seekVideo;
+        goLiveBtn.onclick = goLive;
+        fullScreenBtn.onclick = toggleFullscreen;
+        playerContainer.addEventListener('mousemove', resetControlsTimeout);
+        
+        document.addEventListener('click', function(e) {
+            if (!gearBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+                settingsPanel.classList.remove('active');
+            }
+        });
+    };
+</script>
 </body>
 </html>
