@@ -44,7 +44,6 @@
             margin-top: -4.5px;
             box-shadow: 0 0 10px #f43f5e;
         }
-        /* Completely wipe native controls */
         video::-webkit-media-controls { display: none !important; }
         video::-webkit-media-controls-enclosure { display: none !important; }
     </style>
@@ -65,7 +64,7 @@
         </div>
         <div>
             <span class="text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl font-black text-emerald-400 tracking-wider flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> DIRECT LINE ACTIVE
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> KERNEL PROXY ACTIVE
             </span>
         </div>
     </header>
@@ -130,7 +129,7 @@
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
                     <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">4K STREAM LAYER</span>
-                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">DIRECT LINK TRIGGER</span>
+                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">PROXY DEPLOYED</span>
                 </div>
                 <h2 id="videoTitle" class="text-xl font-bold text-white tracking-tight">Syncing Stream Core...</h2>
                 <p id="fileNameSubtitle" class="text-xs text-slate-400 font-medium break-all max-w-lg">Filename profile active.</p>
@@ -177,16 +176,13 @@
             rawStreamUrl = decodeURIComponent(rawStreamUrl);
             customFileName = decodeURIComponent(customFileName);
 
-            // Interface Updates
             document.getElementById('videoTitle').innerText = customFileName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
             document.getElementById('fileNameSubtitle').innerText = "Target Save Name: " + customFileName;
             
-            // Native Direct Stream Injection
             video.src = rawStreamUrl;
             video.load();
         }
 
-        // Play/Pause Matrix Engine 
         function togglePlayback() {
             if (video.paused) {
                 video.play().catch(e => console.log("Playback error"));
@@ -206,7 +202,6 @@
             return `${mins}:${secs}`;
         }
 
-        // Functional Track Synchronizers (No-Bug Version)
         video.addEventListener('timeupdate', () => {
             if (!isNaN(video.duration) && video.duration > 0) {
                 seekBar.value = (video.currentTime / video.duration) * 100;
@@ -224,14 +219,12 @@
             }
         });
 
-        // App User Experience Triggers
         video.addEventListener('click', togglePlayback);
         playPauseBtn.addEventListener('click', togglePlayback);
         volumeSlider.addEventListener('input', () => { video.volume = volumeSlider.value; });
         speedSelector.addEventListener('change', () => { video.playbackRate = parseFloat(speedSelector.value); });
         pipBtn.addEventListener('click', () => { video.requestPictureInPicture().catch(e => {}); });
         
-        // Advanced Gestures Fixed
         video.addEventListener('dblclick', (e) => {
             e.preventDefault();
             if (!document.fullscreenElement) videoWrapper.requestFullscreen().catch(e => {});
@@ -244,59 +237,93 @@
         });
 
         // ====================================================================
-        // 🔮 100% WORKING DIRECT PIPELINE INJECTION (CORS BYPASSED & STABLE DOWNLOAD)
+        // 🔮 THREE-TIER DEEP BYPASS PROXY ENGINE (ULTIMATE NAME-FORCE METHOD)
         // ====================================================================
         document.getElementById('ultimateDownloadBtn').addEventListener('click', async function() {
             const btn = this;
             const originalText = btn.innerHTML;
             
-            // বাটনে ডাউনলোডিং অ্যানিমেশন ও স্টাইল সেট করা হচ্ছে
             btn.innerHTML = `
                 <svg class="animate-spin h-5 w-5 mr-2 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg> Downloading...`;
+                </svg> Bypassing CORS...`;
             btn.style.opacity = "0.7";
             btn.style.pointerEvents = "none";
 
+            // মেথড ১: ডিরেক্ট লোকাল মেমোরি ব্লব ইনজেকশন (যদি কোনো সিকিউরিটি না থাকে)
             try {
-                // ভিডিও সোর্সটিকে জাভাস্ক্রিপ্ট মেমোরিতে (Blob) ফেচ করা হচ্ছে
                 const response = await fetch(rawStreamUrl);
-                if (!response.ok) throw new Error("Network error or CORS issue");
-                
+                if (!response.ok) throw new Error("Direct Fetch Blocked");
                 const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
+                triggerLocalDownload(blob, customFileName, btn, originalText);
+                return;
+            } catch (e) {
+                console.log("Method 1 Failed. Launching Method 2: High-Speed Reverse Proxy...");
+            }
+
+            // মেথড ২: উন্মুক্ত অল-অরিজিন্স রিভার্স প্রক্সি টানেলিং (CORS হেডার মুছে ফেলার ট্রিক)
+            try {
+                btn.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mr-2 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg> Proxy Tunnelling...`;
                 
-                const finalHookLink = document.createElement('a');
-                finalHookLink.href = blobUrl;
+                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawStreamUrl);
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Proxy Rejected");
+                const blob = await response.blob();
+                triggerLocalDownload(blob, customFileName, btn, originalText);
+                return;
+            } catch (e) {
+                console.log("Method 2 Failed. Launching Method 3: Backup Proxy...");
+            }
+
+            // মেথড ৩: অল্টারনেটিভ প্রক্সি প্লাস ব্রাউজার স্ট্রিম এক্সটেনশন
+            try {
+                const altProxyUrl = "https://cors-anywhere.herokuapp.com/" + rawStreamUrl;
+                const response = await fetch(altProxyUrl);
+                if (!response.ok) throw new Error("All Proxies Exhausted");
+                const blob = await response.blob();
+                triggerLocalDownload(blob, customFileName, btn, originalText);
+                return;
+            } catch (e) {
+                // চরম ব্যর্থতার ক্ষেত্রে (যদি কোনো প্রক্সিই ফাইল রিড করতে না পারে), ব্রাউজারকে ডিরেক্ট ফোর্স করা হবে নতুন ট্যাবে ডাউনলোড উইন্ডো রান করার জন্য।
+                console.log("All algorithmic firewalls active. Reverting to direct stream link injection.");
+                alert("সবগুলো সিকিউরিটি বাইপাস প্রক্সি চেষ্টা করা হয়েছে। ভিডিও প্রোভাইডার সার্ভারের হার্ডওয়্যার ব্লকের কারণে ফাইলটি ব্রাউজারের অরিজিনাল নামেই সেভ হতে পারে।");
                 
-                // লোকাল মেমোরি অবজেক্ট হওয়ার কারণে ব্রাউজার কাস্টম নামটি বাধ্য হয়ে গ্রহণ করবে
-                finalHookLink.setAttribute('download', customFileName);
-                
-                document.body.appendChild(finalHookLink);
-                finalHookLink.click();
-                
-                // ক্লিনআপ মেমোরি
-                document.body.removeChild(finalHookLink);
-                window.URL.revokeObjectURL(blobUrl);
-            } catch (error) {
-                console.error("Blob download failed, trying standard fallback:", error);
-                
-                // ব্যাকআপ ট্রিক (যদি সার্ভার থেকে fetch ব্লক হয়, তবে পুরনো নিয়মে ফাইল ওপেন হবে)
                 const backupLink = document.createElement('a');
                 backupLink.href = rawStreamUrl;
                 backupLink.setAttribute('download', customFileName);
-                backupLink.setAttribute('target', '_blank');
+                backupLink.setAttribute('target', '_blank'); 
+                backupLink.rel = "noopener noreferrer";
                 document.body.appendChild(backupLink);
                 backupLink.click();
                 document.body.removeChild(backupLink);
-            } finally {
-                // বাটন আগের অবস্থায় ফিরিয়ে আনা
+                
                 btn.innerHTML = originalText;
                 btn.style.opacity = "1";
                 btn.style.pointerEvents = "auto";
             }
         });
+
+        // ব্রাউজারের প্রোটোকলকে ধোঁকা দিয়ে কাস্টম নামে ফাইল সেভ করার কোর ইঞ্জিন
+        function triggerLocalDownload(blob, filename, btn, originalText) {
+            const blobUrl = window.URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = blobUrl;
+            anchor.setAttribute('download', filename);
+            document.body.appendChild(anchor);
+            anchor.click();
+            
+            // ক্লিনআপ ও রিসেট
+            document.body.removeChild(anchor);
+            window.URL.revokeObjectURL(blobUrl);
+            btn.innerHTML = originalText;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+        }
 
         window.onload = initAppEngine;
     </script>
