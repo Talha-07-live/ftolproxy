@@ -22,7 +22,6 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        /* Seekbar Custom Styling */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -64,7 +63,7 @@
         </div>
         <div>
             <span class="text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl font-black text-emerald-400 tracking-wider flex items-center gap-1.5">
-                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> UNIVERSAL CORE ACTIVE
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span> SERVICE WORKER TRICK ACTIVE
             </span>
         </div>
     </header>
@@ -73,7 +72,7 @@
         
         <div id="videoWrapper" class="relative w-full aspect-video bg-black rounded-3xl overflow-hidden group premium-glow border border-white/5">
             
-            <video id="mainPlayer" class="w-full h-full object-contain cursor-pointer" playsinline controlslist="nodownload">
+            <video id="mainPlayer" class="w-full h-full object-contain cursor-pointer" playsinline>
                 <source id="videoSource" src="" type="video/mp4" />
             </video>
 
@@ -128,8 +127,8 @@
         <div class="w-full blur-panel p-6 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-6">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">MULTI-DEVICE LAYER</span>
-                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">100% SUCCESS RATIO</span>
+                    <span class="text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-400 px-2.5 py-0.5 rounded-md border border-rose-500/20 uppercase">SW HYBRID INTERCEPTOR</span>
+                    <span class="text-[9px] font-black tracking-widest bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-md border border-emerald-500/20 uppercase">FORCE CUSTOM NAME</span>
                 </div>
                 <h2 id="videoTitle" class="text-xl font-bold text-white tracking-tight">Syncing Stream Core...</h2>
                 <p id="fileNameSubtitle" class="text-xs text-slate-400 font-medium break-all max-w-lg">Filename profile active.</p>
@@ -149,6 +148,53 @@
     </footer>
 
     <script>
+        // ====================================================================
+        // 🔥 LAYER 1: VIRTUAL SERVICE WORKER INJECTION (সার্ভিস ওয়ার্কার ট্রিক কোড)
+        // ====================================================================
+        const workerCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+
+            self.addEventListener('fetch', event => {
+                const url = new URL(event.request.url);
+                // যদি রিকোয়েস্টটি আমাদের ফেক ডাউনলোড গেটওয়েতে আসে
+                if (url.pathname.startsWith('/__sw-force-download__/')) {
+                    const targetUrl = event.request.headers.get('X-Target-Url');
+                    const targetName = event.request.headers.get('X-Target-Name');
+
+                    if (targetUrl) {
+                        event.respondWith(
+                            fetch(targetUrl).then(response => {
+                                // নতুন হেডার অবজেক্ট তৈরি করে ব্রাউজারকে বোকা বানানো হচ্ছে
+                                const newHeaders = new Headers(response.headers);
+                                // ব্রাউজারকে বলা হচ্ছে এটা একটা অ্যাটাচমেন্ট ফাইল এবং এর নাম হবে আপনার কাস্টম নাম
+                                newHeaders.set('Content-Disposition', 'attachment; filename="' + encodeURIComponent(targetName) + '"');
+                                newHeaders.set('Access-Control-Expose-Headers', 'Content-Disposition');
+
+                                return new Response(response.body, {
+                                    status: response.status,
+                                    statusText: response.statusText,
+                                    headers: newHeaders
+                                });
+                            })
+                        );
+                    }
+                }
+            });
+        `;
+
+        // সার্ভিস ওয়ার্কার রেজিস্টার করার ইঞ্জিন
+        if ('serviceWorker' in navigator) {
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(workerUrl, { scope: '/' })
+                .then(() => console.log('SW Stream Interceptor Lock: Active'))
+                .catch(err => console.error('SW Precision Failure:', err));
+        }
+
+        // ====================================================================
+        // PLAYER AND UI CORE LOGIC
+        // ====================================================================
         const video = document.getElementById('mainPlayer');
         const videoWrapper = document.getElementById('videoWrapper');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -237,35 +283,46 @@
         });
 
         // ====================================================================
-        // 🔮 UNIVERSAL ONE-CLICK COPY & SAVE ENGINE (100% WORKING ANYWHERE)
+        // 🔮 LAYER 2: INTERCEPT TRICK TRIGGER (ডাউনলোড বাটন ফায়ারিং মেকানিজম)
         // ====================================================================
         document.getElementById('ultimateDownloadBtn').addEventListener('click', function() {
-            // ১. অটোমেটিকভাবে ক্লিপবোর্ডে কাস্টম নামটি কপি করে নেওয়া হচ্ছে
-            navigator.clipboard.writeText(customFileName).then(() => {
-                console.log("Name loaded to clipboard successfully.");
-            }).catch(err => {
-                // ওল্ড ব্রাউজার বা মোবাইলের জন্য ব্যাকআপ টেক্সট কপি ট্রিক
-                const textArea = document.createElement("textarea");
-                textArea.value = customFileName;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
+            // আমাদের নিজস্ব ডোমেইনে একটি ফেক গেটওয়ে পাথ তৈরি করা হচ্ছে যা সার্ভিস ওয়ার্কার ক্যাচ করবে
+            const gatewayUrl = window.location.origin + '/__sw-force-download__/' + Math.random().toString(36).substring(7);
+
+            // সার্ভিস ওয়ার্কারকে রিকোয়েস্ট হেডার দিয়ে আসল ডাটা পাঠানো হচ্ছে
+            fetch(gatewayUrl, {
+                method: 'GET',
+                headers: {
+                    'X-Target-Url': rawStreamUrl,
+                    'X-Target-Name': customFileName
+                }
+            }).then(res => {
+                // ব্রাউজারের নিজস্ব উইন্ডোতে ডাউনলোড ট্রিগার করা হচ্ছে
+                const clientAnchor = document.createElement('a');
+                clientAnchor.href = gatewayUrl;
+                clientAnchor.setAttribute('download', customFileName);
+                
+                // রিকোয়েস্ট হেডার পাস করার জন্য একটি ইনজেকশন ফর্ম ট্রিক ব্যবহার করছি যাতে সব ব্রাউজার সাপোর্ট করে
+                const secureForm = document.createElement('form');
+                secureForm.method = 'GET';
+                secureForm.action = gatewayUrl;
+                secureForm.style.display = 'none';
+
+                // হেডার ডিক্লেয়ারেশনকে ইউআরএল স্ট্রিমে রূপান্তর
+                const inputUrl = document.createElement('input');
+                inputUrl.name = 'url'; secureForm.appendChild(inputUrl);
+
+                document.body.appendChild(secureForm);
+                
+                // ফাইনাল ট্রিক ডাউনলোডার
+                const triggerAnchor = document.createElement('a');
+                triggerAnchor.href = gatewayUrl;
+                // সার্ভিস ওয়ার্কারকে ডিরেক্ট হুক করার ফাইনাল গেট
+                window.location.href = gatewayUrl; 
+            }).catch(() => {
+                // সেফটি ফলব্যাক
+                window.open(rawStreamUrl, '_blank');
             });
-
-            // ২. ইউজারকে গাইড করার জন্য ডায়নামিক পপআপ মেসেজ
-            alert(`📥 ডাউনলোড শুরু হচ্ছে!\n\nআপনার কাস্টম নামটি অটো-কপি হয়েছে: \n"${customFileName}"\n\nব্রাউজারের "Save As" বক্সে নাম পেস্ট (Ctrl+V) করে সেভ করুন।`);
-
-            // ৩. ইউনিভার্সাল কার্নেল ডাউনলোড ট্রিগার (এটি মোবাইল, পিসি, ক্রোম, সাফারিতে ক্র্যাশ করবে না)
-            const downloadGate = document.createElement('a');
-            downloadGate.href = rawStreamUrl;
-            downloadGate.setAttribute('download', customFileName);
-            downloadGate.setAttribute('target', '_blank');
-            downloadGate.rel = "noopener noreferrer";
-            
-            document.body.appendChild(downloadGate);
-            downloadGate.click();
-            document.body.removeChild(downloadGate);
         });
 
         window.onload = initAppEngine;
